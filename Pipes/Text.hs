@@ -89,6 +89,9 @@ module Pipes.Text  (
     , unlines
     , unwords
 
+    -- * Utilities
+    , pipeIso
+
     -- * Re-exports
     -- $reexports
     , module Data.ByteString
@@ -1115,6 +1118,15 @@ unwords
     :: (Monad m) => FreeT (Producer Text m) m r -> Producer Text m r
 unwords = intercalate (yield $ T.singleton ' ')
 {-# INLINABLE unwords #-}
+
+
+-- | Upgrade a 'Char' isomorphism to work with 'Text' 'Producer's
+pipeIso
+    :: Monad m
+    => Iso' Char Char
+    -> Iso' (Proxy x' x () Text m r) (Proxy x' x () Text m r)
+pipeIso = PP.mapIso $ (<-<) . map
+{-# INLINABLE pipeIso #-}
 
 
 {- $reexports
